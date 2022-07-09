@@ -1,0 +1,58 @@
+@import url("https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css");
+
+html {
+  font-size: 16px;
+  font-variant: none;
+  font-smooth: always;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  font-feature-settings: "ss01" on, "ss02" on, "cv01" on, "cv03" on;
+}
+* {
+  font-family: "Inter", sans-serif !important;
+  text-transform: unset !important;
+  font-variant-numeric: slashed-zero !important;
+}
+
+.v-main {
+  background-color: #fdfdfd !important;
+}
+
+.v-toolbar__content {
+  padding: 0;
+  border-bottom: thin solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.v-card__text {
+  color: inherit !important;
+}
+
+.v-text-field--rounded {
+  border-radius: 5px;
+}
+
+.h1 {
+  font-size: 2.5em;
+}
+
+.h2 {
+  font-size: 2em;
+}
+
+.h3 {
+  font-size: 1.5em;
+}
+
+.h4 {
+  font-size: 1em;
+}
+
+.list-unstyled {
+  list-style: none !important;
+  padding: 0 !important;
+}
+
+.text-small {
+  font-size: 13px !important;
+}
