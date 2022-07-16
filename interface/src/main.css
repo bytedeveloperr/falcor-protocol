@@ -1,58 +1,57 @@
-@import url("https://cdnjs.cloudflare.com/ajax/libs/inter-ui/3.19.3/inter.css");
+/* @import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap"); */
+@import url("https://fonts.googleapis.com/css2?family=Anek+Latin&display=swap");
 
-html {
-  font-size: 16px;
-  font-variant: none;
-  font-smooth: always;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-tap-highlight-color: transparent;
-  font-feature-settings: "ss01" on, "ss02" on, "cv01" on, "cv03" on;
-}
 * {
-  font-family: "Inter", sans-serif !important;
   text-transform: unset !important;
-  font-variant-numeric: slashed-zero !important;
+  font-family: "Anek Latin", sans-serif;
+  /* font-family: "Titillium Web", sans-serif; */
 }
 
-.v-main {
-  background-color: #fdfdfd !important;
+main {
+  background-color: rgb(252, 252, 252);
 }
 
-.v-toolbar__content {
-  padding: 0;
-  border-bottom: thin solid rgba(0, 0, 0, 0.06) !important;
-}
-
-.v-card__text {
-  color: inherit !important;
-}
-
-.v-text-field--rounded {
-  border-radius: 5px;
+.v-menu .v-overlay__content > .v-card,
+.v-menu .v-overlay__content > .v-sheet,
+.v-menu .v-overlay__content > .v-list {
+  background: rgb(var(--v-theme-surface));
+  border-radius: inherit;
+  overflow: auto;
+  height: 100%;
+  box-shadow: 0px 5px 5px -3px rgb(0 0 0 / 20%), 0px 0px 1px rgb(0 0 0 / 14%), 0px 2px 2px 1px rgb(0 0 0 / 12%);
 }
 
 .h1 {
-  font-size: 2.5em;
+  font-size: 2.5rem !important;
 }
 
 .h2 {
-  font-size: 2em;
+  font-size: 2rem !important;
 }
 
 .h3 {
-  font-size: 1.5em;
+  font-size: 1.75rem !important;
 }
 
 .h4 {
-  font-size: 1em;
+  font-size: 1.5rem !important;
 }
 
-.list-unstyled {
-  list-style: none !important;
-  padding: 0 !important;
+.h5 {
+  font-size: 1.25rem !important;
 }
 
-.text-small {
-  font-size: 13px !important;
+.h6 {
+  font-size: 1rem !important;
 }
+
+/* 
+.v-field {
+  background-color: rgb(240, 240, 240);
+}
+
+.v-field__outline,
+.v-field__outline__start,
+.v-field__outline__end {
+  border: 1px solid transparent !important;
+} */

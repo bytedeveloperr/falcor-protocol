@@ -1,8 +1,8 @@
 <template>
   <v-app>
-    <Navigation v-if="!routes.guest.includes($route.name)" />
+    <app-bar />
 
-    <v-main class="mt-5 background">
+    <v-main class="mt-5">
       <v-container>
         <router-view />
       </v-container>
@@ -11,15 +11,10 @@
 </template>
 
 <script>
-import { defineComponent } from "@vue/composition-api"
-import Navigation from "./components/Navigation.vue"
+import AppBar from "./components/AppBar.vue"
 
-export default defineComponent({
-  components: { Navigation },
-  setup() {
-    const routes = { guest: ["connect"] }
-
-    return { routes }
-  },
-})
+export default {
+  name: "App",
+  components: { AppBar },
+}
 </script>

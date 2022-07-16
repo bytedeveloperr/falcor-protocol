@@ -1,14 +1,8 @@
-import Vue from "vue"
-import Vuetify from "vuetify/lib/framework"
+// Styles
+import "@mdi/font/css/materialdesignicons.css"
+import "vuetify/styles"
 
-Vue.use(Vuetify)
+// Vuetify
+import { createVuetify } from "vuetify"
 
-export const vuetify = new Vuetify({
-  theme: {
-    themes: {
-      light: {
-        primary: "#5f22d9",
-      },
-    },
-  },
-})
+export const vuetify = createVuetify()

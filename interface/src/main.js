@@ -1,20 +1,15 @@
-import Vue from "vue"
+import { createApp } from "vue"
 import App from "./App.vue"
+import { createPinia } from "pinia"
 import { router } from "./router"
 import { vuetify } from "./plugins/vuetify"
-import { moralis } from "./helpers/moralis"
-import { createPinia, PiniaVuePlugin } from "pinia"
-import VueCompositionAPI from "@vue/composition-api"
+import { loadFonts } from "./plugins/webfontloader"
 
 import "./main.css"
+import { moralis } from "./utils/moralis"
 
+loadFonts()
 const pinia = createPinia()
-Vue.use(VueCompositionAPI)
-Vue.use(PiniaVuePlugin)
 
-Vue.config.productionTip = false
-
-moralis.initialize().then(() => {
-  const vue = new Vue({ vuetify, pinia, router: router(), render: (h) => h(App) })
-  vue.$mount("#app")
-})
+moralis.initialize()
+createApp(App).use(pinia).use(router).use(vuetify).mount("#app")

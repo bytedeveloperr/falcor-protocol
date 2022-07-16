@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "deploy:trow": "npx hardhat run scripts/trow_deploy.js"
+    "deploy:sling": "npx hardhat run scripts/sling_deploy.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",
