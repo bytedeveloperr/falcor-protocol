@@ -1,1 +1,3 @@
-export class Donation {}
+export class Donation {
+  async createPool(data) {}
+}
