@@ -20,23 +20,29 @@ contract Sling is SlingStorage, Context {
         _WETHGateway = IWETHGateway(_WETHGatewayAddress);
     }
 
-    function createStash(address _token) public {
+    function createDonationPool(address _token) public {
         require(_tokens[_token].isListed, "Sling: Token is not listed");
 
-        _stashCounter.increment();
+        _donationPoolCounter.increment();
 
-        uint256 stashId = _stashCounter.current();
-        _stashes[stashId] = Stash(stashId, _token, _msgSender());
+        uint256 donationPoolId = _donationPoolCounter.current();
+        _donationPools[donationPoolId] = DonationPool(
+            donationPoolId,
+            _token,
+            _msgSender()
+        );
+
+        emit CreateDonationPool(donationPoolId, _token, _msgSender());
     }
 
-    function deposit(uint256 _stashId, uint256 _amount) public payable {
-        Stash memory stash = getStash(_stashId);
-        Token memory stashToken = getToken(stash.token);
+    function deposit(uint256 _donationPoolId, uint256 _amount) public payable {
+        DonationPool memory donationPool = getDonationPool(_donationPoolId);
+        Token memory donationPoolToken = getToken(donationPool.token);
 
         IPool pool = IPool(getPoolAddress());
 
-        if (stashToken.isErc20) {
-            IERC20 token = IERC20(stash.token);
+        if (donationPoolToken.isErc20) {
+            IERC20 token = IERC20(donationPool.token);
 
             require(
                 token.allowance(_msgSender(), address(this)) >= _amount,
@@ -46,7 +52,7 @@ contract Sling is SlingStorage, Context {
             token.transferFrom(_msgSender(), address(this), _amount);
             token.approve(address(pool), _amount);
 
-            pool.supply(stash.token, _amount, address(this), 0);
+            pool.supply(donationPool.token, _amount, address(this), 0);
         } else {
             _WETHGateway.depositETH{value: msg.value}(
                 getPoolAddress(),
@@ -55,80 +61,92 @@ contract Sling is SlingStorage, Context {
             );
         }
 
-        _balances[stash.token] += _amount;
-        _stashBalances[stash.id] += _amount;
-        _accountDeposits[stash.id][_msgSender()] += _amount;
+        _balances[donationPool.token] += _amount;
+        _donationPoolBalances[donationPool.id] += _amount;
+        _accountDeposits[donationPool.id][_msgSender()] += _amount;
+
+        emit DonationPoolDeposit(donationPool.id, _amount, _msgSender());
     }
 
-    function withdraw(uint256 _stashId, uint256 _amount) public payable {
-        Stash memory stash = getStash(_stashId);
-        Token memory stashToken = getToken(stash.token);
+    function withdraw(uint256 _donationPoolId, uint256 _amount) public payable {
+        DonationPool memory donationPool = getDonationPool(_donationPoolId);
+        Token memory donationPoolToken = getToken(donationPool.token);
 
         IPool pool = IPool(getPoolAddress());
 
         require(
-            _amount <= getAccountStashDeposit(_stashId, _msgSender()),
+            _amount <=
+                getAccountDonationPoolDeposit(_donationPoolId, _msgSender()),
             "Sling: Insufficient deposit balance"
         );
         require(
-            _amount <= getStashBalance(_stashId),
-            "Sling: Insufficient stash balance"
+            _amount <= getDonationPoolBalance(_donationPoolId),
+            "Sling: Insufficient donationPool balance"
         );
 
-        if (stashToken.isErc20) {
-            IERC20 token = IERC20(stash.token);
+        if (donationPoolToken.isErc20) {
+            IERC20 token = IERC20(donationPool.token);
 
-            pool.withdraw(stash.token, _amount, address(this));
+            pool.withdraw(donationPool.token, _amount, address(this));
             token.transfer(_msgSender(), _amount);
         } else {
             _WETHGateway.withdrawETH(getPoolAddress(), _amount, address(this));
             payable(_msgSender()).transfer(_amount);
         }
 
-        _balances[stash.token] -= _amount;
-        _stashBalances[stash.id] -= _amount;
-        _accountDeposits[stash.id][_msgSender()] -= _amount;
+        _balances[donationPool.token] -= _amount;
+        _donationPoolBalances[donationPool.id] -= _amount;
+        _accountDeposits[donationPool.id][_msgSender()] -= _amount;
+
+        emit DonationPoolWithdrawal(donationPool.id, _amount, _msgSender());
     }
 
     function getPoolAddress() public view returns (address) {
         return _poolAddressProvider.getPool();
     }
 
-    function getStashYieldBalance(uint256 _stashId)
+    function getDonationPoolYieldBalance(uint256 _donationPoolId)
         public
         view
         returns (uint256)
     {
-        Stash memory stash = getStash(_stashId);
-        uint256 stashBalance = getStashBalance(_stashId);
-        uint256 poolBalance = _balances[stash.token];
+        DonationPool memory donationPool = getDonationPool(_donationPoolId);
+        uint256 donationPoolBalance = getDonationPoolBalance(_donationPoolId);
+        uint256 poolBalance = _balances[donationPool.token];
 
         IPool pool = IPool(getPoolAddress());
         DataTypes.ReserveData memory reserveData = pool.getReserveData(
-            stash.token
+            donationPool.token
         );
 
         IAToken aToken = IAToken(reserveData.aTokenAddress);
         uint256 aTokenBalance = aToken.balanceOf(address(this));
 
         uint256 balanceIncrease = aTokenBalance - poolBalance;
-        return (stashBalance / poolBalance) * balanceIncrease;
+        return (donationPoolBalance / poolBalance) * balanceIncrease;
     }
 
-    function getStash(uint256 _stashId) public view returns (Stash memory) {
-        return _stashes[_stashId];
+    function getDonationPool(uint256 _donationPoolId)
+        public
+        view
+        returns (DonationPool memory)
+    {
+        return _donationPools[_donationPoolId];
     }
 
-    function getStashBalance(uint256 _stashId) public view returns (uint256) {
-        return _stashBalances[_stashId];
-    }
-
-    function getAccountStashDeposit(uint256 _stashId, address _account)
+    function getDonationPoolBalance(uint256 _donationPoolId)
         public
         view
         returns (uint256)
     {
-        return _accountDeposits[_stashId][_account];
+        return _donationPoolBalances[_donationPoolId];
+    }
+
+    function getAccountDonationPoolDeposit(
+        uint256 _donationPoolId,
+        address _account
+    ) public view returns (uint256) {
+        return _accountDeposits[_donationPoolId][_account];
     }
 
     function getToken(address _address) public view returns (Token memory) {

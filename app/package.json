@@ -1,0 +1,39 @@
+{
+  "name": "interface",
+  "version": "0.0.0",
+  "scripts": {
+    "serve": "vite preview",
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "0xsequence": "^0.40.1",
+    "@apollo/client": "^3.6.9",
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
+    "@mdi/font": "5.9.55",
+    "@rollup/plugin-inject": "^4.0.4",
+    "@vueuse/core": "^8.9.3",
+    "@walletconnect/web3-provider": "^1.7.8",
+    "bignumber.js": "^9.0.2",
+    "browserify-zlib": "^0.2.0",
+    "graphql": "^16.5.0",
+    "moralis": "^1.9.0",
+    "path-browserify": "^1.0.1",
+    "pinia": "^2.0.14",
+    "roboto-fontface": "*",
+    "safe-buffer": "^5.2.1",
+    "stream-browserify": "^3.0.0",
+    "vue": "^3.2.37",
+    "vue-router": "^4.0.16",
+    "vuetify": "^3.0.0-beta.0",
+    "webfontloader": "^1.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^2.3.3",
+    "vite": "^2.9.12",
+    "vite-plugin-vuetify": "^1.0.0-alpha.0",
+    "vue-cli-plugin-vuetify": "~2.5.1"
+  }
+}
