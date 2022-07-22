@@ -1,0 +1,30 @@
+specVersion: 0.0.2
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Sling
+    network: mumbai
+    source:
+      address: "0xd386cE1E165bbbC5D8134418cb4814AC72Bf5B14"
+      abi: Sling
+      startBlock: 27229045
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - CreateDonationPool
+        - DonationPoolDeposit
+        - DonationPoolWithdrawal
+      abis:
+        - name: Sling
+          file: Sling/abis/Sling.json
+      eventHandlers:
+        - event: CreateDonationPool(uint256,indexed address,indexed address)
+          handler: handleCreateDonationPool
+        - event: DonationPoolDeposit(uint256,uint256,indexed address)
+          handler: handleDonationPoolDeposit
+        - event: DonationPoolWithdrawal(uint256,uint256,indexed address)
+          handler: handleDonationPoolWithdrawal
+      file: Sling/Sling.wasm

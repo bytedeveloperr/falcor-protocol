@@ -1,0 +1,16 @@
+{
+  "name": "sling",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --product hosted-service bytedeveloperr/sling",
+    "create-local": "graph create --node http://localhost:8020/ bytdeveloperr/sling",
+    "remove-local": "graph remove --node http://localhost:8020/ bytdeveloperr/sling",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 bytdeveloperr/sling"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.29.0",
+    "@graphprotocol/graph-ts": "0.26.0"
+  }
+}

@@ -1,0 +1,23 @@
+type DonationPool @entity {
+  id: ID!
+  token: Bytes!
+  creator: Bytes!
+  balance: BigInt!
+  depositors: [Depositor!] @derivedFrom(field: "pool")
+}
+
+type Depositor @entity {
+  id: ID!
+  pool: DonationPool!
+  address: Bytes!
+  amount: BigInt!
+}
+
+type Transaction @entity {
+  id: Bytes!
+  type: String!
+  account: Bytes!
+  amount: BigInt!
+  timestamp: BigInt!
+  pool: DonationPool!
+}
