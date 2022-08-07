@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "deploy:sling": "npx hardhat run scripts/sling_deploy.js"
+    "deploy:falcor": "npx hardhat run scripts/deploy_falcor.js",
+    "deploy:aggregator": "npx hardhat run scripts/deploy_aggregator.js"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.0",

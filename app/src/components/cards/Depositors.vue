@@ -1,7 +1,9 @@
 <template>
   <v-card flat height="435px">
     <v-card-text class="mt-0">
-      <ul>
+      <Empty v-if="depositors.length < 1" message="No depositors available" />
+
+      <ul v-else>
         <li class="d-flex justify-space-between mb-3">
           <span>Address</span>
           <span>Balance</span>
@@ -19,7 +21,9 @@
 </template>
 
 <script>
+import Empty from "../Empty.vue"
 export default {
   props: ["token", "depositors", "utils"],
+  components: { Empty },
 }
 </script>

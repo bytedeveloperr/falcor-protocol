@@ -1,8 +1,15 @@
+type DepositToken @entity {
+  id: Bytes!
+  amount: BigInt!
+}
+
 type DonationPool @entity {
   id: ID!
   token: Bytes!
   creator: Bytes!
+  beneficiary: Bytes!
   balance: BigInt!
+  depositorsCount: BigInt!
   depositors: [Depositor!] @derivedFrom(field: "pool")
 }
 

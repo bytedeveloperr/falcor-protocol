@@ -16,7 +16,7 @@
     <v-card-actions class="px-3 mt-0">
       <span>{{ pool.balance }} {{ pool.token.symbol }}</span>
       <v-spacer />
-      <span class="mr-1">367 <v-icon size="small" icon="mdi-account-multiple" /></span>
+      <span class="mr-1">{{ pool.depositorsCount }} <v-icon size="small" icon="mdi-account-multiple" /></span>
     </v-card-actions>
   </v-card>
 </template>

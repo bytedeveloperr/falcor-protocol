@@ -1,13 +1,15 @@
 <template>
   <v-card flat height="435px">
     <v-card-text class="px-0">
-      <v-list lines="two">
+      <Empty v-if="transactions.length < 1" message="No transactions available" />
+
+      <v-list v-else lines="two">
         <template v-for="(transaction, i) in transactions" :key="i">
           <v-list-item
             link
             :prepend-icon="`mdi-${transaction.type === 'Deposit' ? 'arrow-bottom-left' : 'arrow-top-right'}`"
             :title="transaction.type"
-            :subtitle="transaction.timestamp"
+            :subtitle="utils.formatDate(transaction.timestamp * 1000)"
             color="primary"
           >
             <template v-slot:append>
@@ -22,7 +24,14 @@
 </template>
 
 <script>
+import { utils } from "../../utils"
+import Empty from "../Empty.vue"
+
 export default {
   props: ["token", "transactions"],
+  setup() {
+    return { utils }
+  },
+  components: { Empty },
 }
 </script>

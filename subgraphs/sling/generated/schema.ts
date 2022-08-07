@@ -11,6 +11,51 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
+export class DepositToken extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+
+    this.set("amount", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save DepositToken entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type DepositToken must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`
+      );
+      store.set("DepositToken", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static load(id: Bytes): DepositToken | null {
+    return changetype<DepositToken | null>(
+      store.get("DepositToken", id.toHexString())
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    return value!.toBytes();
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    return value!.toBigInt();
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+}
+
 export class DonationPool extends Entity {
   constructor(id: string) {
     super();
@@ -18,7 +63,9 @@ export class DonationPool extends Entity {
 
     this.set("token", Value.fromBytes(Bytes.empty()));
     this.set("creator", Value.fromBytes(Bytes.empty()));
+    this.set("beneficiary", Value.fromBytes(Bytes.empty()));
     this.set("balance", Value.fromBigInt(BigInt.zero()));
+    this.set("depositorsCount", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -64,6 +111,15 @@ export class DonationPool extends Entity {
     this.set("creator", Value.fromBytes(value));
   }
 
+  get beneficiary(): Bytes {
+    let value = this.get("beneficiary");
+    return value!.toBytes();
+  }
+
+  set beneficiary(value: Bytes) {
+    this.set("beneficiary", Value.fromBytes(value));
+  }
+
   get balance(): BigInt {
     let value = this.get("balance");
     return value!.toBigInt();
@@ -71,6 +127,15 @@ export class DonationPool extends Entity {
 
   set balance(value: BigInt) {
     this.set("balance", Value.fromBigInt(value));
+  }
+
+  get depositorsCount(): BigInt {
+    let value = this.get("depositorsCount");
+    return value!.toBigInt();
+  }
+
+  set depositorsCount(value: BigInt) {
+    this.set("depositorsCount", Value.fromBigInt(value));
   }
 
   get depositors(): Array<string> | null {

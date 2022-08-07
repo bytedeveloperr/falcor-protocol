@@ -11,7 +11,9 @@ export function handleCreateDonationPool(event: CreateDonationPool): void {
 
     pool.balance = BigInt.fromI32(0)
     pool.creator = event.params.creator
+    pool.beneficiary = event.params.beneficiary
     pool.token = event.params.token
+    pool.depositorsCount = BigInt.fromI32(0)
   }
 
   pool.save()

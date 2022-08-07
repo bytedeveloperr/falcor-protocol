@@ -6,9 +6,9 @@ dataSources:
     name: Sling
     network: mumbai
     source:
-      address: "0xd386cE1E165bbbC5D8134418cb4814AC72Bf5B14"
+      address: "0x40ec5B483a289da5dEa95b2840f63d03da5f0B60"
       abi: Sling
-      startBlock: 27229045
+      startBlock: 27376235
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -21,7 +21,7 @@ dataSources:
         - name: Sling
           file: Sling/abis/Sling.json
       eventHandlers:
-        - event: CreateDonationPool(uint256,indexed address,indexed address)
+        - event: CreateDonationPool(uint256,indexed address,indexed address,indexed address)
           handler: handleCreateDonationPool
         - event: DonationPoolDeposit(uint256,uint256,indexed address)
           handler: handleDonationPoolDeposit

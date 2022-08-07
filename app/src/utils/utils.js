@@ -1,6 +1,10 @@
 import { tokens } from "../config"
 import { moralis } from "./moralis"
 import { BigNumber } from "@ethersproject/bignumber"
+import * as date from "date-fns"
+import numbro from "numbro"
+
+numbro.setDefaults({ thousandSeparated: true, mantissa: 2 })
 
 export const utils = {
   truncateEthAddress(address) {
@@ -40,5 +44,14 @@ export const utils = {
 
   toBigNumber(value) {
     return BigNumber.from(value)
+  },
+
+  formatDate(value) {
+    return date.format(Number(value), "MMM d, yyyy h:m aa")
+  },
+
+  formatNumber(value) {
+    const number = numbro(value)
+    return number.format()
   },
 }

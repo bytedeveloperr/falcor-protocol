@@ -14,10 +14,17 @@
               type="number"
               variant="outlined"
               density="compact"
+              color="primary"
               :rules="[rules.required]"
               v-model="state.input.amount"
               :label="`Amount of ${pool.token && pool.token.symbol}`"
-            />
+            >
+              <template v-slot:append-inner>
+                <v-avatar density="compact" size="small">
+                  <v-img :src="pool.token.logo" />
+                </v-avatar>
+              </template>
+            </v-text-field>
 
             <v-btn block flat type="submit" color="primary" :disabled="state.submitting">
               Deposit {{ pool.token && pool.token.symbol }}
@@ -53,9 +60,9 @@ export default {
 
         if (form.value.errors.length < 1) {
           const data = {
-            amount: state.input.amount,
-            poolId: props.pool.poolId,
             token: props.pool.token,
+            poolId: props.pool.poolId,
+            amount: state.input.amount,
             account: connectionService.state.address,
           }
 

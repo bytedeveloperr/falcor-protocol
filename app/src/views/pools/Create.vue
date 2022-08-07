@@ -2,6 +2,7 @@
   <v-row>
     <v-col cols="12" md="6" class="mx-auto">
       <p class="h4 text-center mb-5">Create a Donation Pool</p>
+
       <v-card flat class="py-10">
         <v-card-text>
           <v-form @submit.prevent="createPool" ref="form">
@@ -21,6 +22,15 @@
               :rules="[rules.required]"
               variant="outlined"
               label="What's your pool about?"
+            />
+
+            <v-text-field
+              v-model="state.input.beneficiary"
+              color="primary"
+              density="compact"
+              :rules="[rules.required]"
+              variant="outlined"
+              label="Beneficiary address"
             />
 
             <v-select
@@ -45,7 +55,14 @@
               :rules="[rules.required]"
               variant="outlined"
               label="Choose Token"
-            />
+              return-object
+            >
+              <template v-slot:append-inner>
+                <v-avatar density="compact" size="small">
+                  <v-img :src="state.input.token && state.input.token.logo" />
+                </v-avatar>
+              </template>
+            </v-select>
 
             <v-btn block flat type="submit" color="primary" :disabled="state.submitting">Create Donation Pool</v-btn>
           </v-form>
@@ -72,7 +89,7 @@ export default {
       try {
         await form.value.validate()
         if (form.value.errors.length < 1) {
-          await poolService.createPool(state.input)
+          await poolService.createPool({ ...state.input, token: state.input.token?.address })
         }
       } catch (e) {
         console.log(e)

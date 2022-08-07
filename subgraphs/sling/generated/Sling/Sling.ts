@@ -34,6 +34,10 @@ export class CreateDonationPool__Params {
   get creator(): Address {
     return this._event.parameters[2].value.toAddress();
   }
+
+  get beneficiary(): Address {
+    return this._event.parameters[3].value.toAddress();
+  }
 }
 
 export class DonationPoolDeposit extends ethereum.Event {
@@ -100,19 +104,9 @@ export class Sling__getDonationPoolResultValue0Struct extends ethereum.Tuple {
   get creator(): Address {
     return this[2].toAddress();
   }
-}
 
-export class Sling__getTokenResultValue0Struct extends ethereum.Tuple {
-  get addr(): Address {
-    return this[0].toAddress();
-  }
-
-  get isErc20(): boolean {
-    return this[1].toBoolean();
-  }
-
-  get isListed(): boolean {
-    return this[2].toBoolean();
+  get beneficiary(): Address {
+    return this[3].toAddress();
   }
 }
 
@@ -121,47 +115,12 @@ export class Sling extends ethereum.SmartContract {
     return new Sling("Sling", address);
   }
 
-  getAccountDonationPoolDeposit(
-    _donationPoolId: BigInt,
-    _account: Address
-  ): BigInt {
-    let result = super.call(
-      "getAccountDonationPoolDeposit",
-      "getAccountDonationPoolDeposit(uint256,address):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(_donationPoolId),
-        ethereum.Value.fromAddress(_account)
-      ]
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getAccountDonationPoolDeposit(
-    _donationPoolId: BigInt,
-    _account: Address
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getAccountDonationPoolDeposit",
-      "getAccountDonationPoolDeposit(uint256,address):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(_donationPoolId),
-        ethereum.Value.fromAddress(_account)
-      ]
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   getDonationPool(
     _donationPoolId: BigInt
   ): Sling__getDonationPoolResultValue0Struct {
     let result = super.call(
       "getDonationPool",
-      "getDonationPool(uint256):((uint256,address,address))",
+      "getDonationPool(uint256):((uint256,address,address,address))",
       [ethereum.Value.fromUnsignedBigInt(_donationPoolId)]
     );
 
@@ -175,7 +134,7 @@ export class Sling extends ethereum.SmartContract {
   ): ethereum.CallResult<Sling__getDonationPoolResultValue0Struct> {
     let result = super.tryCall(
       "getDonationPool",
-      "getDonationPool(uint256):((uint256,address,address))",
+      "getDonationPool(uint256):((uint256,address,address,address))",
       [ethereum.Value.fromUnsignedBigInt(_donationPoolId)]
     );
     if (result.reverted) {
@@ -187,22 +146,22 @@ export class Sling extends ethereum.SmartContract {
     );
   }
 
-  getDonationPoolBalance(_donationPoolId: BigInt): BigInt {
+  getDonationPoolDeposit(_donationPoolId: BigInt): BigInt {
     let result = super.call(
-      "getDonationPoolBalance",
-      "getDonationPoolBalance(uint256):(uint256)",
+      "getDonationPoolDeposit",
+      "getDonationPoolDeposit(uint256):(uint256)",
       [ethereum.Value.fromUnsignedBigInt(_donationPoolId)]
     );
 
     return result[0].toBigInt();
   }
 
-  try_getDonationPoolBalance(
+  try_getDonationPoolDeposit(
     _donationPoolId: BigInt
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "getDonationPoolBalance",
-      "getDonationPoolBalance(uint256):(uint256)",
+      "getDonationPoolDeposit",
+      "getDonationPoolDeposit(uint256):(uint256)",
       [ethereum.Value.fromUnsignedBigInt(_donationPoolId)]
     );
     if (result.reverted) {
@@ -212,22 +171,22 @@ export class Sling extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  getDonationPoolYieldBalance(_donationPoolId: BigInt): BigInt {
+  getDonationPoolYield(_donationPoolId: BigInt): BigInt {
     let result = super.call(
-      "getDonationPoolYieldBalance",
-      "getDonationPoolYieldBalance(uint256):(uint256)",
+      "getDonationPoolYield",
+      "getDonationPoolYield(uint256):(uint256)",
       [ethereum.Value.fromUnsignedBigInt(_donationPoolId)]
     );
 
     return result[0].toBigInt();
   }
 
-  try_getDonationPoolYieldBalance(
+  try_getDonationPoolYield(
     _donationPoolId: BigInt
   ): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "getDonationPoolYieldBalance",
-      "getDonationPoolYieldBalance(uint256):(uint256)",
+      "getDonationPoolYield",
+      "getDonationPoolYield(uint256):(uint256)",
       [ethereum.Value.fromUnsignedBigInt(_donationPoolId)]
     );
     if (result.reverted) {
@@ -256,31 +215,82 @@ export class Sling extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  getToken(_address: Address): Sling__getTokenResultValue0Struct {
+  getTokenTotalBalance(_token: Address): BigInt {
     let result = super.call(
-      "getToken",
-      "getToken(address):((address,bool,bool))",
-      [ethereum.Value.fromAddress(_address)]
+      "getTokenTotalBalance",
+      "getTokenTotalBalance(address):(uint256)",
+      [ethereum.Value.fromAddress(_token)]
     );
 
-    return changetype<Sling__getTokenResultValue0Struct>(result[0].toTuple());
+    return result[0].toBigInt();
   }
 
-  try_getToken(
-    _address: Address
-  ): ethereum.CallResult<Sling__getTokenResultValue0Struct> {
+  try_getTokenTotalBalance(_token: Address): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
-      "getToken",
-      "getToken(address):((address,bool,bool))",
-      [ethereum.Value.fromAddress(_address)]
+      "getTokenTotalBalance",
+      "getTokenTotalBalance(address):(uint256)",
+      [ethereum.Value.fromAddress(_token)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
     let value = result.value;
-    return ethereum.CallResult.fromValue(
-      changetype<Sling__getTokenResultValue0Struct>(value[0].toTuple())
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getTokenTotalYield(_token: Address): BigInt {
+    let result = super.call(
+      "getTokenTotalYield",
+      "getTokenTotalYield(address):(uint256)",
+      [ethereum.Value.fromAddress(_token)]
     );
+
+    return result[0].toBigInt();
+  }
+
+  try_getTokenTotalYield(_token: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getTokenTotalYield",
+      "getTokenTotalYield(address):(uint256)",
+      [ethereum.Value.fromAddress(_token)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getUserDonationPoolDeposit(_donationPoolId: BigInt, _user: Address): BigInt {
+    let result = super.call(
+      "getUserDonationPoolDeposit",
+      "getUserDonationPoolDeposit(uint256,address):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_donationPoolId),
+        ethereum.Value.fromAddress(_user)
+      ]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getUserDonationPoolDeposit(
+    _donationPoolId: BigInt,
+    _user: Address
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getUserDonationPoolDeposit",
+      "getUserDonationPoolDeposit(uint256,address):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_donationPoolId),
+        ethereum.Value.fromAddress(_user)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 }
 
@@ -301,12 +311,16 @@ export class ConstructorCall__Inputs {
     this._call = call;
   }
 
-  get _poolAddressesProviderAddress(): Address {
+  get poolAddressesProvider_(): Address {
     return this._call.inputValues[0].value.toAddress();
   }
 
-  get _WETHGatewayAddress(): Address {
+  get tokensRegistry_(): Address {
     return this._call.inputValues[1].value.toAddress();
+  }
+
+  get WETHGateway_(): Address {
+    return this._call.inputValues[2].value.toAddress();
   }
 }
 
@@ -314,40 +328,6 @@ export class ConstructorCall__Outputs {
   _call: ConstructorCall;
 
   constructor(call: ConstructorCall) {
-    this._call = call;
-  }
-}
-
-export class AddTokenCall extends ethereum.Call {
-  get inputs(): AddTokenCall__Inputs {
-    return new AddTokenCall__Inputs(this);
-  }
-
-  get outputs(): AddTokenCall__Outputs {
-    return new AddTokenCall__Outputs(this);
-  }
-}
-
-export class AddTokenCall__Inputs {
-  _call: AddTokenCall;
-
-  constructor(call: AddTokenCall) {
-    this._call = call;
-  }
-
-  get _address(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get isEr20(): boolean {
-    return this._call.inputValues[1].value.toBoolean();
-  }
-}
-
-export class AddTokenCall__Outputs {
-  _call: AddTokenCall;
-
-  constructor(call: AddTokenCall) {
     this._call = call;
   }
 }
@@ -371,6 +351,10 @@ export class CreateDonationPoolCall__Inputs {
 
   get _token(): Address {
     return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _beneficiary(): Address {
+    return this._call.inputValues[1].value.toAddress();
   }
 }
 

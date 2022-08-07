@@ -1,16 +1,46 @@
-/* @import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap"); */
-/* @import url("https://fonts.googleapis.com/css2?family=Anek+Latin&display=swap"); */
-@import url("https://fonts.googleapis.com/css2?family=Assistant&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
+@import url("https://rsms.me/inter/inter.css");
+
+@supports (font-variation-settings: normal) {
+  html {
+    font-family: "Inter var", sans-serif;
+  }
+}
 
 * {
   text-transform: unset !important;
-  font-family: "Assistant", sans-serif;
-  /* font-family: "Anek Latin", sans-serif; */
-  /* font-family: "Titillium Web", sans-serif; */
 }
 
-body {
+html {
+  font-family: "Inter", sans-serif;
+  font-variant-numeric: slashed-zero;
   background-color: #090030;
+}
+
+.wrapper {
+  background-color: rgb(var(--v-theme-surface)) !important;
+}
+
+.v-toolbar {
+  flex: unset !important;
+  position: relative !important;
+}
+
+.v-toolbar__content {
+  padding: 10px 0 !important;
+  height: unset !important;
+}
+
+.v-container.fill-height {
+  height: unset !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.v-main {
+  position: relative !important;
+  padding: 20px 0px 0px !important;
 }
 
 .h1 {
@@ -48,7 +78,7 @@ body {
 }
 
 .v-dialog .v-overlay__content {
-  width: 90%;
+  width: 95%;
 }
 
 @media (min-width: 576px) {

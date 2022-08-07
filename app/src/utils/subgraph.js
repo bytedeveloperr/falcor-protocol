@@ -9,12 +9,13 @@ export const subgraph = {
           token
           creator
           balance
+          depositorsCount
         }
       }
     `
 
     const response = await slingSubgraphClient.query({ query, variables: { poolId } })
-    return response.data.donationPool || { id: 0, token: "0x0", creator: "0x0", balance: "0" }
+    return response.data.donationPool || { id: 0, token: "0x0", creator: "0x0", balance: "0", depositorsCount: "0" }
   },
 
   async getPoolDepositor(poolId, depositor) {

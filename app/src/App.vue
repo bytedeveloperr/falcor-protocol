@@ -2,7 +2,7 @@
   <v-app>
     <app-bar />
 
-    <v-main class="mt-5">
+    <v-main>
       <v-container>
         <router-view />
       </v-container>

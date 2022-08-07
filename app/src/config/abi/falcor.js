@@ -1,14 +1,19 @@
-export const slingABI = [
+export const falcorABI = [
   {
     inputs: [
       {
         internalType: "address",
-        name: "_poolAddressesProviderAddress",
+        name: "poolAddressesProvider_",
         type: "address",
       },
       {
         internalType: "address",
-        name: "_WETHGatewayAddress",
+        name: "tokensRegistry_",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "WETHGateway_",
         type: "address",
       },
     ],
@@ -34,6 +39,12 @@ export const slingABI = [
         indexed: true,
         internalType: "address",
         name: "creator",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "beneficiary",
         type: "address",
       },
     ],
@@ -94,25 +105,12 @@ export const slingABI = [
     inputs: [
       {
         internalType: "address",
-        name: "_address",
+        name: "_token",
         type: "address",
       },
       {
-        internalType: "bool",
-        name: "isEr20",
-        type: "bool",
-      },
-    ],
-    name: "addToken",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
-        name: "_token",
+        name: "_beneficiary",
         type: "address",
       },
     ],
@@ -146,30 +144,6 @@ export const slingABI = [
         name: "_donationPoolId",
         type: "uint256",
       },
-      {
-        internalType: "address",
-        name: "_account",
-        type: "address",
-      },
-    ],
-    name: "getAccountDonationPoolDeposit",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_donationPoolId",
-        type: "uint256",
-      },
     ],
     name: "getDonationPool",
     outputs: [
@@ -190,8 +164,13 @@ export const slingABI = [
             name: "creator",
             type: "address",
           },
+          {
+            internalType: "address",
+            name: "beneficiary",
+            type: "address",
+          },
         ],
-        internalType: "struct SlingStorage.DonationPool",
+        internalType: "struct FalcorStorage.DonationPool",
         name: "",
         type: "tuple",
       },
@@ -207,7 +186,7 @@ export const slingABI = [
         type: "uint256",
       },
     ],
-    name: "getDonationPoolBalance",
+    name: "getDonationPoolDeposit",
     outputs: [
       {
         internalType: "uint256",
@@ -226,7 +205,20 @@ export const slingABI = [
         type: "uint256",
       },
     ],
-    name: "getDonationPoolYieldBalance",
+    name: "getDonationPoolYield",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getDonationPoolsCount",
     outputs: [
       {
         internalType: "uint256",
@@ -254,33 +246,59 @@ export const slingABI = [
     inputs: [
       {
         internalType: "address",
-        name: "_address",
+        name: "_token",
         type: "address",
       },
     ],
-    name: "getToken",
+    name: "getTokenTotalBalance",
     outputs: [
       {
-        components: [
-          {
-            internalType: "address",
-            name: "addr",
-            type: "address",
-          },
-          {
-            internalType: "bool",
-            name: "isErc20",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "isListed",
-            type: "bool",
-          },
-        ],
-        internalType: "struct SlingStorage.Token",
+        internalType: "uint256",
         name: "",
-        type: "tuple",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_token",
+        type: "address",
+      },
+    ],
+    name: "getTokenTotalYield",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_donationPoolId",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getUserDonationPoolDeposit",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -301,7 +319,7 @@ export const slingABI = [
     ],
     name: "withdraw",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
   },
 ]

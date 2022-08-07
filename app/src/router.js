@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router"
+import Overview from "./views/Overview.vue"
 import Explore from "./views/Explore.vue"
 import Connect from "./views/Connect.vue"
 import CreatePool from "./views/pools/Create.vue"
@@ -9,6 +10,7 @@ import { useConnectionStore } from "./stores"
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    { path: "/", name: "overview", component: Overview },
     { path: "/explore", name: "explore", component: Explore },
     { path: "/connect", name: "connect", component: Connect },
     { path: "/pools/create", name: "createPool", component: CreatePool },

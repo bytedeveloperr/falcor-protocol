@@ -4,35 +4,33 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./interfaces/aave/IWETHGateway.sol";
 import "./interfaces/aave/IPool.sol";
+import "./interfaces/ITokensRegistry.sol";
 
-contract SlingStorage {
+contract FalcorStorage {
+    address constant WETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     Counters.Counter internal _donationPoolCounter;
 
-    IWETHGateway internal _WETHGateway;
     IPoolAddressesProvider internal _poolAddressProvider;
+    IWETHGateway internal _WETHGateway;
+    ITokensRegistry internal _tokensRegistry;
 
-    mapping(address => Token) internal _tokens;
+    mapping(address => uint256) internal _totalBalances;
     mapping(uint256 => DonationPool) internal _donationPools;
-    mapping(address => uint256) internal _balances;
-    mapping(uint256 => uint256) internal _donationPoolBalances;
-    mapping(uint256 => mapping(address => uint256)) internal _accountDeposits;
+    mapping(uint256 => uint256) internal _donationPoolDeposits;
+    mapping(uint256 => mapping(address => uint256)) internal _userDeposits;
 
     struct DonationPool {
         uint256 id;
         address token;
         address creator;
-    }
-
-    struct Token {
-        address addr;
-        bool isErc20;
-        bool isListed;
+        address beneficiary;
     }
 
     event CreateDonationPool(
         uint256 id,
         address indexed token,
-        address indexed creator
+        address indexed creator,
+        address indexed beneficiary
     );
     event DonationPoolDeposit(
         uint256 poolId,
