@@ -17,7 +17,13 @@
           <div class="d-flex">
             <v-btn flat icon="mdi-share" />
             &nbsp;
-            <v-btn flat icon="mdi-cog" :to="`/pools/${state.pool.poolId}/settings`"></v-btn>
+            <v-btn
+              v-if="user.address == state.pool.creator"
+              flat
+              icon="mdi-cog"
+              :to="`/pools/${state.pool.poolId}/settings`"
+            >
+            </v-btn>
           </div>
         </div>
 
@@ -106,21 +112,21 @@
 </template>
 
 <script>
-import { onMounted, reactive } from "vue"
-import { useRoute } from "vue-router"
-import { poolService, connectionService } from "../../services"
-import PoolDepositModal from "../../components/modals/PoolDeposit.vue"
-import { utils } from "../../utils"
-import Depositors from "../../components/cards/Depositors.vue"
-import Balance from "../../components/cards/Balance.vue"
-import PoolWithdrawalModal from "../../components/modals/PoolWithdrawal.vue"
-import Transactions from "../../components/cards/Transactions.vue"
-import Loading from "../../components/Loading.vue"
+import { onMounted, reactive } from "vue";
+import { useRoute } from "vue-router";
+import { poolService, connectionService } from "../../services";
+import PoolDepositModal from "../../components/modals/PoolDeposit.vue";
+import { utils } from "../../utils";
+import Depositors from "../../components/cards/Depositors.vue";
+import Balance from "../../components/cards/Balance.vue";
+import PoolWithdrawalModal from "../../components/modals/PoolWithdrawal.vue";
+import Transactions from "../../components/cards/Transactions.vue";
+import Loading from "../../components/Loading.vue";
 
 export default {
   components: { PoolDepositModal, Depositors, Balance, PoolWithdrawalModal, Transactions, Loading },
   setup() {
-    const route = useRoute()
+    const route = useRoute();
     const state = reactive({
       loading: false,
       pool: {},
@@ -135,25 +141,27 @@ export default {
         deposit: false,
         withdraw: false,
       },
-    })
+    });
 
     function toggleModal(type) {
-      state.modals[type] = !state.modals[type]
+      state.modals[type] = !state.modals[type];
     }
 
     onMounted(async () => {
-      state.loading = true
+      state.loading = true;
 
-      state.pool = await poolService.getPool(route.params.id, connectionService.state.address)
-      state.depositors = await poolService.getPoolDepositors(route.params.id)
-      state.transactions = await poolService.getPoolTransactions(route.params.id)
+      state.pool = await poolService.getPool(route.params.id, connectionService.state.address);
+      state.depositors = await poolService.getPoolDepositors(route.params.id);
+      state.transactions = await poolService.getPoolTransactions(route.params.id);
 
-      state.loading = false
-    })
+      console.log(JSON.parse(JSON.stringify(state.pool)));
 
-    return { state, toggleModal, utils }
+      state.loading = false;
+    });
+
+    return { user: connectionService.state, state, toggleModal, utils };
   },
-}
+};
 </script>
 <style scoped>
 ul {

@@ -9,7 +9,7 @@
         <v-app-bar-title tag="a" link to="/l">{{ config.app.name }}</v-app-bar-title>
 
         <div class="d-none d-md-flex">
-          <v-btn flat to="/">Overview</v-btn>
+          <v-btn flat to="/overview">Overview</v-btn>
           <v-btn flat to="/explore">Explore</v-btn>
           <v-btn flat to="/leaderboard">Leaderboard</v-btn>
         </div>
@@ -66,38 +66,38 @@
 </template>
 
 <script>
-import { ref } from "vue"
-import { useRouter } from "vue-router"
-import { connectionService } from "../services"
-import { utils } from "../utils"
-import { config } from "../config"
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { connectionService } from "../services";
+import { utils } from "../utils";
+import { config } from "../config";
 
 export default {
   setup() {
-    const drawer = ref(null)
-    const router = useRouter()
-    const state = { connection: connectionService.state }
+    const drawer = ref(null);
+    const router = useRouter();
+    const state = { connection: connectionService.state };
 
     const items = [
       { title: "View on explorer", icon: "open-in-new", function: viewOnExplorer },
       { title: "Disconnect Wallet", icon: "logout-variant", function: disconnect },
-    ]
+    ];
 
     async function disconnect() {
-      await connectionService.disconnect()
+      await connectionService.disconnect();
 
-      router.push("/connect")
+      router.push("/connect");
     }
 
     function viewOnExplorer() {
-      window.open(`${config.mumbai.explorer}/address/${state.connection.address}`, "_blank")
+      window.open(`${config.mumbai.explorer}/address/${state.connection.address}`, "_blank");
     }
 
     function toggleDrawer() {
-      drawer.value = !drawer.value
+      drawer.value = !drawer.value;
     }
 
-    return { items, utils, config, disconnect, drawer, toggleDrawer, state }
+    return { items, utils, config, disconnect, drawer, toggleDrawer, state };
   },
-}
+};
 </script>

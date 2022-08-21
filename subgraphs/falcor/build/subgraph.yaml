@@ -1,14 +1,14 @@
 specVersion: 0.0.2
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum
-    name: Sling
+    name: Falcor
     network: mumbai
     source:
-      address: "0x40ec5B483a289da5dEa95b2840f63d03da5f0B60"
-      abi: Sling
-      startBlock: 27376235
+      address: "0x43817C56c6721Ed2A495a994C428940CF61beF1B"
+      abi: Falcor
+      startBlock: 27709800
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -18,8 +18,8 @@ dataSources:
         - DonationPoolDeposit
         - DonationPoolWithdrawal
       abis:
-        - name: Sling
-          file: ./abis/Sling.json
+        - name: Falcor
+          file: Falcor/abis/Falcor.json
       eventHandlers:
         - event: CreateDonationPool(uint256,indexed address,indexed address,indexed address)
           handler: handleCreateDonationPool
@@ -27,4 +27,4 @@ dataSources:
           handler: handleDonationPoolDeposit
         - event: DonationPoolWithdrawal(uint256,uint256,indexed address)
           handler: handleDonationPoolWithdrawal
-      file: ./src/mapping.ts
+      file: Falcor/Falcor.wasm

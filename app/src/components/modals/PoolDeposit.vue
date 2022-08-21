@@ -26,7 +26,7 @@
               </template>
             </v-text-field>
 
-            <v-btn block flat type="submit" color="primary" :disabled="state.submitting">
+            <v-btn block flat type="submit" color="primary" :disabled="state.submitted">
               Deposit {{ pool.token && pool.token.symbol }}
             </v-btn>
           </v-form>
@@ -37,26 +37,26 @@
 </template>
 
 <script>
-import { ref } from "vue"
-import { connectionService, poolService } from "../../services"
+import { reactive, ref } from "vue";
+import { connectionService, poolService } from "../../services";
 
 export default {
   props: ["show", "pool"],
   emits: ["toggleModal"],
 
   setup(props, ctx) {
-    const form = ref(null)
-    const state = { submitting: false, input: {} }
-    const rules = { required: (value) => !!value || "This field is required" }
+    const form = ref(null);
+    const state = reactive({ submitted: false, input: {} });
+    const rules = { required: (value) => !!value || "This field is required" };
 
     function toggleModal() {
-      ctx.emit("toggleModal")
+      ctx.emit("toggleModal");
     }
 
     async function deposit() {
-      state.submitting = true
       try {
-        await form.value.validate()
+        state.submitted = true;
+        await form.value.validate();
 
         if (form.value.errors.length < 1) {
           const data = {
@@ -64,18 +64,20 @@ export default {
             poolId: props.pool.poolId,
             amount: state.input.amount,
             account: connectionService.state.address,
-          }
+          };
 
-          await poolService.deposit(data)
+          await poolService.deposit(data);
+          ctx.emit("toggleModal");
+          state.input = {};
         }
       } catch (e) {
-        console.log(e)
+        console.log(e);
       } finally {
-        state.submitting = false
+        state.submitted = false;
       }
     }
 
-    return { toggleModal, form, deposit, state, rules }
+    return { toggleModal, form, deposit, state, rules };
   },
-}
+};
 </script>

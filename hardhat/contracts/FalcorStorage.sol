@@ -8,6 +8,8 @@ import "./interfaces/ITokensRegistry.sol";
 
 contract FalcorStorage {
     address constant WETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
+    uint256 internal _distributioninterval;
+    uint256 internal _lastDistributionTimestamp;
     Counters.Counter internal _donationPoolCounter;
 
     IPoolAddressesProvider internal _poolAddressProvider;

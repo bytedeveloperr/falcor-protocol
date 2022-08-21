@@ -1,4 +1,4 @@
-const env = import.meta.env
+const env = import.meta.env;
 
 export const config = {
   app: {
@@ -11,4 +11,8 @@ export const config = {
     explorer: env.VITE_MUMBAI_EXPLORER_URL,
     priceAggregator: env.VITE_PRICE_AGGREGATOR_MUMBAI,
   },
-}
+  moralis: {
+    appId: env.VITE_MORALIS_APP_ID,
+    serverUrl: env.VITE_MORALIS_SERVER_URL,
+  },
+};

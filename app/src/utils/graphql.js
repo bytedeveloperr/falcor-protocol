@@ -1,7 +1,7 @@
-import { ApolloClient, gql, InMemoryCache } from "@apollo/client/core"
+import { ApolloClient, gql, InMemoryCache } from "@apollo/client/core";
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/bytedeveloperr/sling"
+const subgraphUrl = "https://api.thegraph.com/subgraphs/name/bytedeveloperr/falcor";
 
-const slingSubgraphClient = new ApolloClient({ uri: subgraphUrl, cache: new InMemoryCache() })
+const slingSubgraphClient = new ApolloClient({ uri: subgraphUrl, cache: new InMemoryCache() });
 
-export { slingSubgraphClient, gql }
+export { slingSubgraphClient, gql };

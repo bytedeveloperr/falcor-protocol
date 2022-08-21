@@ -4,21 +4,24 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./interfaces/chainlink/KeeperCompatibleInterface.sol";
 import "./interfaces/aave/IAToken.sol";
 import "./interfaces/ITokensRegistry.sol";
 import "./FalcorStorage.sol";
 
-contract Falcor is FalcorStorage, Context {
+contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
     using Counters for Counters.Counter;
 
     constructor(
         address poolAddressesProvider_,
         address tokensRegistry_,
-        address WETHGateway_
+        address WETHGateway_,
+        uint256 distributioninterval_
     ) {
         _poolAddressProvider = IPoolAddressesProvider(poolAddressesProvider_);
         _tokensRegistry = ITokensRegistry(tokensRegistry_);
         _WETHGateway = IWETHGateway(WETHGateway_);
+        _distributioninterval = distributioninterval_;
     }
 
     function createDonationPool(address _token, address _beneficiary)
@@ -111,6 +114,79 @@ contract Falcor is FalcorStorage, Context {
 
     function getDonationPoolsCount() public view returns (uint256) {
         return _donationPoolCounter.current();
+    }
+
+    function checkUpkeep(bytes calldata)
+        external
+        view
+        override
+        returns (bool upkeepNeeded, bytes memory performData)
+    {
+        uint256 totalDonationPools = _donationPoolCounter.current();
+
+        uint256[] memory amounts = new uint256[](totalDonationPools);
+        DonationPool[] memory donationPools = new DonationPool[](
+            totalDonationPools
+        );
+
+        if (
+            block.timestamp - _lastDistributionTimestamp >=
+            _distributioninterval
+        ) {
+            upkeepNeeded = false;
+
+            for (uint256 i = 0; i < totalDonationPools; i++) {
+                uint256 poolId = i + 1;
+
+                uint256 yieldAmount = _calculateDonationPoolYield(poolId);
+                DonationPool memory donationPool = _donationPools[poolId];
+
+                if (yieldAmount > 0) {
+                    upkeepNeeded = true;
+
+                    amounts[i] = yieldAmount;
+                    donationPools[i] = donationPool;
+                }
+            }
+        } else {
+            upkeepNeeded = false;
+        }
+
+        performData = abi.encode(donationPools, amounts);
+        return (upkeepNeeded, performData);
+    }
+
+    function performUpkeep(bytes calldata performData) external override {
+        (DonationPool[] memory donationPools, uint256[] memory amounts) = abi
+            .decode(performData, (DonationPool[], uint256[]));
+
+        require(
+            donationPools.length == amounts.length,
+            "Donation pools and Amounts array length must be the same"
+        );
+
+        IPool pool = IPool(getPoolAddress());
+
+        for (uint256 i = 0; i < donationPools.length; i++) {
+            DonationPool memory donationPool = donationPools[i];
+
+            if (donationPool.token == WETH_ADDRESS) {
+                _WETHGateway.withdrawETH(
+                    address(pool),
+                    amounts[i],
+                    address(this)
+                );
+
+                payable(donationPool.beneficiary).transfer(amounts[i]);
+            } else {
+                IERC20 token = IERC20(donationPool.token);
+
+                pool.withdraw(donationPool.token, amounts[i], address(this));
+                token.transfer(donationPool.beneficiary, amounts[i]);
+            }
+        }
+
+        _lastDistributionTimestamp = block.timestamp;
     }
 
     function _depositToken(DonationPool memory _pool, uint256 _amount)

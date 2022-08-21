@@ -1,0 +1,19 @@
+{
+  "name": "falcor",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --product hosted-service bytedeveloperr/falcor",
+    "create-local": "graph create --node http://localhost:8020/ bytdeveloperr/falcor",
+    "remove-local": "graph remove --node http://localhost:8020/ bytdeveloperr/falcor",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 bytdeveloperr/falcor"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.29.0",
+    "@graphprotocol/graph-ts": "0.26.0"
+  },
+  "devDependencies": {
+    "graph": "^0.2.0"
+  }
+}
