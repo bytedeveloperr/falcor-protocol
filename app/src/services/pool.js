@@ -1,48 +1,56 @@
 import { config } from "../config";
 import { moralis, subgraph, utils } from "../utils";
 import { falcorABI, erc20ABI } from "../config/abi";
+import { usePoolStore } from "../stores";
 
 export class PoolService {
   constructor() {
     this.PoolObject = moralis.createObject("Pools", {});
   }
 
-  async createPool(input) {
-    const options = {
-      type: "write",
-      address: config.falcor.address,
-      abi: falcorABI,
-      method: "createDonationPool",
-      params: { _token: input.token, _beneficiary: input.beneficiary },
-    };
+  createPool(input) {
+    return new Promise(async (resolve) => {
+      const options = {
+        type: "write",
+        address: config.falcor.address,
+        abi: falcorABI,
+        method: "createDonationPool",
+        params: { _token: input.token, _beneficiary: input.beneficiary },
+      };
 
-    const tx = await moralis.invoke(options);
-    const receipt = await tx.wait();
-    const iface = new moralis.ethers.utils.Interface(falcorABI);
+      const tx = await moralis.invoke(options);
+      const receipt = await tx.wait();
+      const iface = new moralis.ethers.utils.Interface(falcorABI);
 
-    for (let i = 0; i < receipt.logs.length; i++) {
-      try {
-        const log = receipt.logs[i];
-        const data = iface.decodeEventLog("CreateDonationPool", log.data, log.topics);
+      for (let i = 0; i < receipt.logs.length; i++) {
+        try {
+          const log = receipt.logs[i];
+          const data = iface.decodeEventLog("CreateDonationPool", log.data, log.topics);
 
-        if (data.id && data.creator && data.token) {
-          const pool = new this.PoolObject();
-          pool.set("poolId", data.id.toString());
-          pool.set("creator", data.creator);
-          pool.set("name", input.name);
-          pool.set("token", input.token);
-          pool.set("beneficiary", input.beneficiary);
-          pool.set("description", input.description);
-          pool.set("category", input.category);
-          await pool.save();
+          if (data.id && data.creator && data.token) {
+            const pool = new this.PoolObject();
+            pool.set("poolId", data.id.toString());
+            pool.set("creator", data.creator);
+            pool.set("name", input.name);
+            pool.set("token", input.token);
+            pool.set("beneficiary", input.beneficiary);
+            pool.set("description", input.description);
+            pool.set("category", input.category);
+            await pool.save();
 
-          break;
+            resolve(data.id);
+
+            break;
+          }
+        } catch (e) {
+          console.log(e);
         }
-      } catch (e) {}
-    }
+      }
+    });
   }
 
   async updatePool(poolId, input) {
+    const poolStore = usePoolStore();
     const query = moralis.query("Pools");
     query.equalTo("poolId", poolId);
 
@@ -53,41 +61,11 @@ export class PoolService {
     pool.set("category", input.category);
 
     await pool.save();
+    poolStore.updatePool(poolId, { name: input.name, description: input.description, category: input.category });
   }
 
   async deposit(data) {
     const amount = utils.parseUnits(String(data.amount), data.token.decimals);
-    const allowanceOptions = {
-      type: "view",
-      chain: "mumbai",
-      method: "allowance",
-      address: data.token.address,
-      abi: erc20ABI,
-      params: {
-        _owner: data.account,
-        _spender: config.falcor.address,
-      },
-    };
-    const allowance = await moralis.invoke(allowanceOptions);
-
-    console.log(allowance);
-
-    if (utils.toBigNumber(allowance).lt(amount)) {
-      const approveOptions = {
-        type: "write",
-        method: "approve",
-        address: data.token.address,
-        abi: erc20ABI,
-        params: {
-          _owner: data.account,
-          _spender: config.falcor.address,
-          _value: amount,
-        },
-      };
-
-      const approve = await moralis.invoke(approveOptions);
-      await approve.wait();
-    }
 
     const depositOptions = {
       type: "write",
@@ -122,20 +100,22 @@ export class PoolService {
     return await withdraw.wait();
   }
 
-  async getPools() {
+  async loadPools() {
+    const poolStore = usePoolStore();
     const query = moralis.query("Pools");
     query.limit(10);
 
     const pools = await query.find();
-    return await Promise.all(pools.map((pool) => this.#buildPool(pool)));
+    poolStore.setPools(await Promise.all(pools.map((pool) => this.#buildPool(pool))));
   }
 
-  async getPool(id, account) {
+  async loadPool(id, account) {
+    const poolStore = usePoolStore();
     const query = moralis.query("Pools");
     query.equalTo("poolId", id);
 
     const pool = await query.first();
-    return await this.#buildPool(pool, account);
+    poolStore.setCurrentpool(await this.#buildPool(pool, account));
   }
 
   async getPoolCurrentYield(poolId) {
@@ -158,11 +138,10 @@ export class PoolService {
 
     const token = utils.getTokenDetails(pool.attributes.token);
 
-    console.log(await this.getPoolCurrentYield(pool.attributes.poolId));
     const data = {
       ...utils.copyObject(pool.attributes),
       ...(await subgraph.getDonationPool(pool.attributes.poolId)),
-      yield: utils.formatUnits(await this.getPoolCurrentYield(pool.attributes.poolId), token.decimals),
+      yield: utils.formatUnits(await this.getPoolCurrentYield(pool.attributes.poolId), token.decimals * 2),
       token: token,
     };
 

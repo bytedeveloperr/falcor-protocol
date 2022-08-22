@@ -29,21 +29,24 @@
 </template>
 
 <script>
-import { connectionService } from "../services"
+import { useRouter } from "vue-router";
+import { connectionService } from "../services";
 
 export default {
   setup() {
+    const router = useRouter();
     const items = [
       { id: "metamask", logo: "/assets/images/metamask.svg", name: "Metamask" },
       { id: "sequence", logo: "/assets/images/sequence.svg", name: "Sequence" },
       { id: "walletconnect", logo: "/assets/images/walletconnect.svg", name: "WalletConnect" },
-    ]
+    ];
 
     async function connect(connector) {
-      await connectionService.connect(connector)
+      await connectionService.connect(connector);
+      router.push("/explore");
     }
 
-    return { items, connect }
+    return { items, connect };
   },
-}
+};
 </script>

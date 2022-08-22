@@ -18,6 +18,7 @@
               :rules="[rules.required]"
               v-model="state.input.amount"
               :label="`Amount of ${pool.token && pool.token.symbol}`"
+              @input="updateApprovalStatus"
             >
               <template v-slot:append-inner>
                 <v-avatar density="compact" size="small">
@@ -26,8 +27,12 @@
               </template>
             </v-text-field>
 
-            <v-btn block flat type="submit" color="primary" :disabled="state.submitted">
+            <v-btn v-if="state.isApproved" block flat type="submit" color="primary" :disabled="state.submitted">
               Deposit {{ pool.token && pool.token.symbol }}
+            </v-btn>
+
+            <v-btn v-else block flat @click="approve" color="primary" :disabled="state.submitted">
+              Approve {{ pool.token && pool.token.symbol }}
             </v-btn>
           </v-form>
         </v-card-text>
@@ -37,8 +42,10 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
-import { connectionService, poolService } from "../../services";
+import { onMounted, reactive, ref } from "vue";
+import { config } from "../../config";
+import { connectionService, poolService, tokenService } from "../../services";
+import { utils } from "../../utils";
 
 export default {
   props: ["show", "pool"],
@@ -46,11 +53,60 @@ export default {
 
   setup(props, ctx) {
     const form = ref(null);
-    const state = reactive({ submitted: false, input: {} });
+    const state = reactive({ isApproved: false, submitted: false, input: {} });
     const rules = { required: (value) => !!value || "This field is required" };
 
     function toggleModal() {
       ctx.emit("toggleModal");
+    }
+
+    onMounted(async () => {
+      await updateApprovalStatus();
+    });
+
+    async function updateApprovalStatus() {
+      const token = props.pool.token;
+
+      if (token) {
+        if (token.address === config.nullAddress) {
+          state.isApproved = true;
+        } else {
+          const allowanceOptions = {
+            token: token.address,
+            spender: config.falcor.address,
+            account: connectionService.state.address,
+          };
+
+          const amount = utils.parseUnits(String(state.input.amount || 0), token.decimals);
+          const allowance = await tokenService.getAllowance(allowanceOptions);
+          state.isApproved = !utils.toBigNumber(allowance).lt(amount);
+        }
+      }
+    }
+
+    async function approve() {
+      try {
+        state.submitted = true;
+
+        const token = props.pool.token;
+        const amount = utils.parseUnits(String(state.input.amount || 0), token.decimals);
+
+        const approvalOptions = {
+          amount,
+          token: token.address,
+          spender: config.falcor.address,
+          account: connectionService.state.address,
+        };
+
+        const approval = await tokenService.approve(approvalOptions);
+        await approval.wait();
+
+        await updateApprovalStatus();
+      } catch (e) {
+        console.log(e);
+      } finally {
+        state.submitted = false;
+      }
     }
 
     async function deposit() {
@@ -67,8 +123,10 @@ export default {
           };
 
           await poolService.deposit(data);
+
           ctx.emit("toggleModal");
           state.input = {};
+          window.location.reload();
         }
       } catch (e) {
         console.log(e);
@@ -77,7 +135,7 @@ export default {
       }
     }
 
-    return { toggleModal, form, deposit, state, rules };
+    return { toggleModal, updateApprovalStatus, approve, form, deposit, state, rules };
   },
 };
 </script>

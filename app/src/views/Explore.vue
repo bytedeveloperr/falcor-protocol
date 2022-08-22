@@ -7,20 +7,20 @@
         label="Search Donation Pools..."
         density="compact"
         variant="outlined"
+        v-model="state.input.text"
       />
     </v-col>
 
     <v-col md="4" cols="12" class="ma-0 py-0">
       <v-select
-        :items="items"
-        v-model="select"
+        :items="categories"
+        v-model="state.input.category"
         prepend-inner-icon="mdi-filter-outline"
         label="Filter Donation Pools..."
         variant="outlined"
         density="compact"
         color="primary"
         return-object
-        single-line
       />
     </v-col>
   </v-row>
@@ -50,29 +50,45 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref } from "vue"
-import PoolCard from "../components/cards/Pool.vue"
-import { poolService } from "../services"
-import Empty from "../components/Empty.vue"
-import Loading from "../components/Loading.vue"
+import { onMounted, reactive, ref, watch } from "vue";
+import PoolCard from "../components/cards/Pool.vue";
+import { poolService } from "../services";
+import Empty from "../components/Empty.vue";
+import Loading from "../components/Loading.vue";
+import { usePoolStore } from "../stores";
+import { storeToRefs } from "pinia";
+import { categories } from "../config";
 
 export default {
   components: { PoolCard, Empty, Loading },
   setup() {
-    const state = reactive({ loading: false, pools: [] })
+    const { pools } = storeToRefs(usePoolStore());
+    const state = reactive({ loading: false, pools: [], input: { text: "" } });
 
     onMounted(async () => {
-      state.loading = true
+      state.loading = true;
 
-      state.pools = await poolService.getPools()
+      await poolService.loadPools();
+      state.pools = pools.value;
 
-      state.loading = false
-    })
+      state.loading = false;
+    });
 
-    const select = ref("")
-    const items = ["Florida", "Georgia", "Nebraska", "California", "New York"]
+    watch(
+      () => state.input.text,
+      (n) => {
+        state.pools = pools.value.filter((pool) => pool.name?.includes(n) || pool.description?.includes(n));
+      }
+    );
 
-    return { state, items, select }
+    watch(
+      () => state.input.category,
+      (n) => {
+        state.pools = pools.value.filter((pool) => pool.category == n);
+      }
+    );
+
+    return { state, categories };
   },
-}
+};
 </script>

@@ -67,6 +67,15 @@ html {
   font-size: 1rem !important;
 }
 
+.text-small {
+  font-size: smaller !important;
+}
+
+th,
+td {
+  white-space: nowrap !important;
+}
+
 .v-menu .v-overlay__content > .v-card,
 .v-menu .v-overlay__content > .v-sheet,
 .v-menu .v-overlay__content > .v-list {

@@ -3,6 +3,11 @@
     <v-col cols="12" md="6" class="mx-auto">
       <p class="h4 text-center mb-5">Create a Donation Pool</p>
 
+      <v-alert icon="mdi-information-outline" density="compact" color="info primary-text" class="mb-3">
+        The deposit of USDT and USDC is currently not allowed on this network because the assets have reached their
+        supply cap on the underlying yield source protocol.
+      </v-alert>
+
       <v-card flat class="py-10">
         <v-card-text>
           <v-form @submit.prevent="createPool" ref="form">
@@ -73,32 +78,35 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue"
-import { categories, tokens } from "../../config/"
-import { poolService } from "../../services"
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { categories, tokens } from "../../config/";
+import { poolService } from "../../services";
 
 export default {
   setup() {
-    const form = ref(null)
-    const state = reactive({ submitting: false, input: {} })
-    const rules = { required: (value) => !!value || "This field is required" }
+    const form = ref(null);
+    const router = useRouter();
+    const state = reactive({ submitting: false, input: {} });
+    const rules = { required: (value) => !!value || "This field is required" };
 
     async function createPool() {
-      state.submitting = true
+      state.submitting = true;
 
       try {
-        await form.value.validate()
+        await form.value.validate();
         if (form.value.errors.length < 1) {
-          await poolService.createPool({ ...state.input, token: state.input.token?.address })
+          const poolId = await poolService.createPool({ ...state.input, token: state.input.token?.address });
+          router.push(`/pools/${poolId}`);
         }
       } catch (e) {
-        console.log(e)
+        console.log(e);
       } finally {
-        state.submitting = false
+        state.submitting = false;
       }
     }
 
-    return { tokens, categories, state, rules, createPool, form }
+    return { tokens, categories, state, rules, createPool, form };
   },
-}
+};
 </script>

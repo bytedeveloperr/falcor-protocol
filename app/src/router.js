@@ -13,6 +13,7 @@ export const router = createRouter({
     { path: "/overview", name: "overview", component: Overview },
     { path: "/explore", name: "explore", component: Explore },
     { path: "/connect", name: "connect", component: Connect },
+
     { path: "/pools/create", name: "createPool", component: CreatePool },
     { path: "/pools/:id", name: "viewPool", component: ViewPool },
     { path: "/pools/:id/settings", name: "poolSettings", component: PoolSettings },

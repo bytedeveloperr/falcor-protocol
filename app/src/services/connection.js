@@ -14,8 +14,13 @@ export class ConnectionService {
     connectionStore.saveConnection({ address: user.get("ethAddress"), chainId: moralis.getChainId(), provider });
   }
 
+  async updateChainId(chainId) {
+    const connectionStore = useConnectionStore();
+    connectionStore.setChainId(chainId);
+  }
+
   async disconnect() {
-    // const connectionStore = useConnectionStore();
-    // connectionStore.removeConnection();
+    const connectionStore = useConnectionStore();
+    connectionStore.removeConnection();
   }
 }

@@ -1,6 +1,7 @@
 const env = import.meta.env;
 
 export const config = {
+  nullAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
   app: {
     name: env.VITE_APP_NAME,
   },
@@ -14,5 +15,8 @@ export const config = {
   moralis: {
     appId: env.VITE_MORALIS_APP_ID,
     serverUrl: env.VITE_MORALIS_SERVER_URL,
+  },
+  chains: {
+    80001: "mumbai",
   },
 };

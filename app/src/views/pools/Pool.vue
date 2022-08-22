@@ -17,22 +17,17 @@
           <div class="d-flex">
             <v-btn flat icon="mdi-share" />
             &nbsp;
-            <v-btn
-              v-if="user.address == state.pool.creator"
-              flat
-              icon="mdi-cog"
-              :to="`/pools/${state.pool.poolId}/settings`"
-            >
+            <v-btn v-if="user.address == pool.creator" flat icon="mdi-cog" :to="`/pools/${pool.poolId}/settings`">
             </v-btn>
           </div>
         </div>
 
         <div class="mb-3">
-          <h4 class="my-3 h4 font-weight-medium">{{ state.pool.name }}</h4>
-          <v-chip label color="primary" prepend-icon="mdi-decagram-outline">{{ state.pool.category }}</v-chip>
+          <h4 class="my-3 h4 font-weight-medium">{{ pool.name }}</h4>
+          <v-chip label color="primary" prepend-icon="mdi-decagram-outline">{{ pool.category }}</v-chip>
         </div>
 
-        <p style="font-size: 16px">{{ state.pool.description }}</p>
+        <p style="font-size: 16px">{{ pool.description }}</p>
       </v-col>
     </v-row>
 
@@ -68,17 +63,13 @@
 
     <v-row class="mb-3">
       <v-col cols="12" md="4">
-        <Balance :value="state.pool.balance" :token="state.pool.token" title="Total Deposit" />
+        <Balance :value="pool.balance" :token="pool.token" title="Total Deposit" />
       </v-col>
       <v-col cols="12" md="4">
-        <Balance :value="state.pool.yield" :token="state.pool.token" title="Current Yield" />
+        <Balance :value="pool.yield" :token="pool.token" title="Current Yield" />
       </v-col>
       <v-col cols="12" md="4">
-        <Balance
-          :value="state.pool.depositor && state.pool.depositor.amount"
-          :token="state.pool.token"
-          title="Your Deposit"
-        />
+        <Balance :value="pool.depositor && pool.depositor.amount" :token="pool.token" title="Your Deposit" />
       </v-col>
     </v-row>
 
@@ -91,7 +82,7 @@
           <v-btn variant="text" density="compact" color="primary" class="px-0">view all</v-btn>
         </div>
 
-        <Depositors :utils="utils" :token="state.pool.token" :depositors="state.depositors" />
+        <Depositors :utils="utils" :token="pool.token" :depositors="state.depositors" />
       </v-col>
 
       <v-col cols="12" md="6">
@@ -102,12 +93,12 @@
           <v-btn variant="text" density="compact" color="primary" class="px-0">view all</v-btn>
         </div>
 
-        <Transactions :token="state.pool.token" :transactions="state.transactions" />
+        <Transactions :token="pool.token" :transactions="state.transactions" />
       </v-col>
     </v-row>
 
-    <PoolDepositModal :show="state.modals.deposit" :pool="state.pool" @toggleModal="toggleModal('deposit')" />
-    <PoolWithdrawalModal :show="state.modals.withdraw" :pool="state.pool" @toggleModal="toggleModal('withdraw')" />
+    <PoolDepositModal :show="state.modals.deposit" :pool="pool" @toggleModal="toggleModal('deposit')" />
+    <PoolWithdrawalModal :show="state.modals.withdraw" :pool="pool" @toggleModal="toggleModal('withdraw')" />
   </template>
 </template>
 
@@ -122,14 +113,17 @@ import Balance from "../../components/cards/Balance.vue";
 import PoolWithdrawalModal from "../../components/modals/PoolWithdrawal.vue";
 import Transactions from "../../components/cards/Transactions.vue";
 import Loading from "../../components/Loading.vue";
+import { storeToRefs } from "pinia";
+import { usePoolStore } from "../../stores";
 
 export default {
   components: { PoolDepositModal, Depositors, Balance, PoolWithdrawalModal, Transactions, Loading },
   setup() {
     const route = useRoute();
+    const { pool } = storeToRefs(usePoolStore());
+
     const state = reactive({
       loading: false,
-      pool: {},
       depositors: {},
       transactions: {},
       items: [{ title: "Share Pool", icon: "mdi-share" }],
@@ -150,16 +144,16 @@ export default {
     onMounted(async () => {
       state.loading = true;
 
-      state.pool = await poolService.getPool(route.params.id, connectionService.state.address);
+      await poolService.loadPool(route.params.id, connectionService.state.address);
       state.depositors = await poolService.getPoolDepositors(route.params.id);
       state.transactions = await poolService.getPoolTransactions(route.params.id);
 
-      console.log(JSON.parse(JSON.stringify(state.pool)));
+      console.log(JSON.parse(JSON.stringify(pool)));
 
       state.loading = false;
     });
 
-    return { user: connectionService.state, state, toggleModal, utils };
+    return { user: connectionService.state, pool, state, toggleModal, utils };
   },
 };
 </script>

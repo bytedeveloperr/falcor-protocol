@@ -37,4 +37,6 @@ interface IWETHGateway {
         bytes32 permitR,
         bytes32 permitS
     ) external;
+
+    function getWETHAddress() external view returns (address);
 }

@@ -69,6 +69,7 @@ export default {
           await poolService.withdraw(data);
           ctx.emit("toggleModal");
           state.input = {};
+          window.location.reload();
         }
       } catch (e) {
         console.log(e);

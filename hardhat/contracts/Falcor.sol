@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "./interfaces/chainlink/KeeperCompatibleInterface.sol";
 import "./interfaces/aave/IAToken.sol";
 import "./interfaces/ITokensRegistry.sol";
@@ -15,12 +15,10 @@ contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
     constructor(
         address poolAddressesProvider_,
         address tokensRegistry_,
-        address WETHGateway_,
         uint256 distributioninterval_
     ) {
         _poolAddressProvider = IPoolAddressesProvider(poolAddressesProvider_);
         _tokensRegistry = ITokensRegistry(tokensRegistry_);
-        _WETHGateway = IWETHGateway(WETHGateway_);
         _distributioninterval = distributioninterval_;
     }
 
@@ -46,7 +44,7 @@ contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
         );
     }
 
-    function deposit(uint256 _donationPoolId, uint256 _amount) public payable {
+    function deposit(uint256 _donationPoolId, uint256 _amount) public {
         DonationPool memory donationPool = getDonationPool(_donationPoolId);
 
         _depositToken(donationPool, _amount);
@@ -57,6 +55,15 @@ contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
 
     function withdraw(uint256 _donationPoolId, uint256 _amount) public {
         DonationPool memory donationPool = getDonationPool(_donationPoolId);
+
+        require(
+            _amount <= _getUserDeposit(donationPool.id, _msgSender()),
+            "Falcor: Insufficient deposit balance"
+        );
+        require(
+            _amount <= _getDonationPoolDeposit(donationPool.id),
+            "Falcor: Insufficient donation balance"
+        );
 
         _withdrawToken(donationPool, _amount);
         _recordWithdrawData(donationPool, _amount);
@@ -133,18 +140,18 @@ contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
             block.timestamp - _lastDistributionTimestamp >=
             _distributioninterval
         ) {
-            upkeepNeeded = false;
+            upkeepNeeded = true;
 
             for (uint256 i = 0; i < totalDonationPools; i++) {
                 uint256 poolId = i + 1;
 
-                uint256 yieldAmount = _calculateDonationPoolYield(poolId);
                 DonationPool memory donationPool = _donationPools[poolId];
 
-                if (yieldAmount > 0) {
-                    upkeepNeeded = true;
+                uint256 yieldAmount = _calculateDonationPoolYield(poolId);
+                IERC20Metadata token = IERC20Metadata(donationPool.token);
 
-                    amounts[i] = yieldAmount;
+                if (yieldAmount > 0) {
+                    amounts[i] = yieldAmount / (10**token.decimals());
                     donationPools[i] = donationPool;
                 }
             }
@@ -165,25 +172,8 @@ contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
             "Donation pools and Amounts array length must be the same"
         );
 
-        IPool pool = IPool(getPoolAddress());
-
         for (uint256 i = 0; i < donationPools.length; i++) {
-            DonationPool memory donationPool = donationPools[i];
-
-            if (donationPool.token == WETH_ADDRESS) {
-                _WETHGateway.withdrawETH(
-                    address(pool),
-                    amounts[i],
-                    address(this)
-                );
-
-                payable(donationPool.beneficiary).transfer(amounts[i]);
-            } else {
-                IERC20 token = IERC20(donationPool.token);
-
-                pool.withdraw(donationPool.token, amounts[i], address(this));
-                token.transfer(donationPool.beneficiary, amounts[i]);
-            }
+            _withdrawToken(donationPools[i], amounts[i]);
         }
 
         _lastDistributionTimestamp = block.timestamp;
@@ -194,29 +184,17 @@ contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
     {
         IPool pool = IPool(getPoolAddress());
 
-        if (_pool.token == WETH_ADDRESS) {
-            require(
-                _amount == msg.value,
-                "Falcor: Amount must be exactly the same as the value sent"
-            );
+        IERC20Metadata token = IERC20Metadata(_pool.token);
 
-            _WETHGateway.depositETH{value: msg.value}(
-                address(pool),
-                address(this),
-                0
-            );
-        } else {
-            IERC20 token = IERC20(_pool.token);
+        require(
+            token.allowance(_msgSender(), address(this)) >= _amount,
+            "Falcor: Insufficient token allowance"
+        );
 
-            require(
-                token.allowance(_msgSender(), address(this)) >= _amount,
-                "Falcor: Insufficient token allowance"
-            );
+        token.transferFrom(_msgSender(), address(this), _amount);
 
-            token.transferFrom(_msgSender(), address(this), _amount);
-            token.approve(address(pool), _amount);
-            pool.supply(_pool.token, _amount, address(this), 0);
-        }
+        token.approve(address(pool), _amount);
+        pool.supply(_pool.token, _amount, address(this), 0);
     }
 
     function _recordDepositData(DonationPool memory _pool, uint256 _amount)
@@ -230,26 +208,8 @@ contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
     function _withdrawToken(DonationPool memory _pool, uint256 _amount)
         internal
     {
-        require(
-            _amount <= _getUserDeposit(_pool.id, _msgSender()),
-            "Falcor: Insufficient deposit balance"
-        );
-        require(
-            _amount <= _getDonationPoolDeposit(_pool.id),
-            "Falcor: Insufficient donation balance"
-        );
-
         IPool pool = IPool(getPoolAddress());
-
-        if (_pool.token == WETH_ADDRESS) {
-            _WETHGateway.withdrawETH(address(pool), _amount, address(this));
-            payable(_msgSender()).transfer(_amount);
-        } else {
-            IERC20 token = IERC20(_pool.token);
-
-            pool.withdraw(_pool.token, _amount, address(this));
-            token.transfer(_msgSender(), _amount);
-        }
+        pool.withdraw(_pool.token, _amount, _msgSender());
     }
 
     function _recordWithdrawData(DonationPool memory _pool, uint256 _amount)
@@ -312,10 +272,12 @@ contract Falcor is FalcorStorage, KeeperCompatibleInterface, Context {
             return 0;
         }
 
+        IERC20Metadata token = IERC20Metadata(donationPool.token);
         uint256 tokenBalance = _getTokenTotalBalance(donationPool.token);
         uint256 tokenYield = _getTokenTotalYield(donationPool.token);
 
-        return (poolDeposit / tokenBalance) * tokenYield;
+        return
+            ((poolDeposit * 10**token.decimals()) / tokenBalance) * tokenYield;
     }
 
     modifier ensureTokenIsEnabled(address _token) {

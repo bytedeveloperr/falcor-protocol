@@ -1,18 +1,25 @@
 import { Moralis } from "moralis";
 import { config } from "../config";
+import { connectionService } from "../services";
 
 export const moralis = {
   async initialize() {
     await Moralis.start({ serverUrl: config.moralis.serverUrl, appId: config.moralis.appId });
     await Moralis.enableWeb3();
+
+    moralis.setupListeners();
   },
 
   async authenticate({ current, provider } = {}) {
+    let user;
     if (!!current) {
-      return await Moralis.User.currentAsync();
+      user = await Moralis.User.currentAsync();
     }
 
-    return await Moralis.authenticate({ provider });
+    user = await Moralis.authenticate({ provider });
+    moralis.setupListeners();
+
+    return user;
   },
 
   getChainId() {
@@ -41,5 +48,11 @@ export const moralis = {
 
   get ethers() {
     return Moralis.web3Library;
+  },
+
+  setupListeners() {
+    Moralis.onChainChanged((chainId) => connectionService.updateChainId(chainId));
+    Moralis.onAccountChanged(() => connectionService.connect(connectionService.state.provider));
+    Moralis.onDisconnect(() => connectionService.disconnect());
   },
 };

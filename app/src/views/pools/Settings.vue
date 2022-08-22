@@ -5,7 +5,7 @@
     </template>
     <template v-else>
       <v-col cols="12" md="6" class="mx-auto">
-        <p class="h4 mb-5 font-weight-bold">{{ state.pool.name }}</p>
+        <p class="h4 mb-5 font-weight-bold">{{ pool.name }}</p>
 
         <v-form @submit.prevent="updatePool" ref="form">
           <v-text-field
@@ -80,45 +80,50 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref } from "vue"
-import { categories, tokens } from "../../config/"
-import { connectionService, poolService } from "../../services"
-import { useRoute } from "vue-router"
-import Loading from "../../components/Loading.vue"
+import { onMounted, reactive, ref } from "vue";
+import { categories, tokens } from "../../config/";
+import { connectionService, poolService } from "../../services";
+import { useRoute } from "vue-router";
+import Loading from "../../components/Loading.vue";
+import { storeToRefs } from "pinia";
+import { usePoolStore } from "../../stores";
 
 export default {
   components: { Loading },
   setup() {
-    const form = ref(null)
-    const route = useRoute()
-    const state = reactive({ loading: false, submitting: false, input: {}, pool: {} })
-    const rules = { required: (value) => !!value || "This field is required" }
+    const form = ref(null);
+    const route = useRoute();
+    const { pool } = storeToRefs(usePoolStore());
+    const state = reactive({ loading: false, submitting: false, input: {}, pool: {} });
+    const rules = { required: (value) => !!value || "This field is required" };
     onMounted(async () => {
-      state.loading = true
-      state.pool = await poolService.getPool(route.params.id, connectionService.state.address)
-      state.input.name = state.pool.name
-      state.input.token = state.pool.token
-      state.input.category = state.pool.category
-      state.input.description = state.pool.description
+      state.loading = true;
 
-      state.loading = false
-    })
+      await poolService.loadPool(route.params.id, connectionService.state.address);
+
+      state.input.name = pool.value.name;
+      state.input.token = pool.value.token;
+      state.input.category = pool.value.category;
+      state.input.description = pool.value.description;
+
+      state.loading = false;
+    });
 
     async function updatePool() {
-      state.submitting = true
+      state.submitting = true;
       try {
-        await form.value.validate()
+        await form.value.validate();
         if (form.value.errors.length < 1) {
-          await poolService.updatePool(state.pool.poolId, state.input)
+          await poolService.updatePool(pool.value.poolId, state.input);
         }
       } catch (e) {
-        console.log(e)
+        console.log(e);
       } finally {
-        state.submitting = false
+        state.submitting = false;
       }
     }
 
-    return { tokens, categories, state, rules, updatePool, form }
+    return { tokens, pool, categories, state, rules, updatePool, form };
   },
-}
+};
 </script>

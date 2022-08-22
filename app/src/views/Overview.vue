@@ -27,7 +27,6 @@
             <v-table>
               <thead>
                 <tr>
-                  <th>#</th>
                   <th>Asset</th>
                   <th>Total Deposited</th>
                   <th>Current Yield</th>
@@ -36,10 +35,12 @@
               </thead>
               <tbody>
                 <tr v-for="(token, i) in state.tokens" :key="`token-${i++}`">
-                  <td>{{ i }}</td>
                   <td>
-                    <v-avatar size="20"><v-img :src="token.logo" /></v-avatar>
-                    &nbsp; {{ token.symbol }}
+                    <v-avatar size="20">
+                      <v-img :src="token.logo" />
+                    </v-avatar>
+                    &nbsp;
+                    {{ token.symbol }}
                   </td>
                   <td>{{ token.deposit }}</td>
                   <td>{{ token.yield }}</td>
