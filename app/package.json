@@ -8,7 +8,6 @@
     "preview": "vite preview --port 4173"
   },
   "dependencies": {
-    "0xsequence": "^0.40.1",
     "@apollo/client": "^3.6.9",
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@esbuild-plugins/node-modules-polyfill": "^0.1.4",
