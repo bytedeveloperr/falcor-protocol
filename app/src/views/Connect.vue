@@ -37,7 +37,6 @@ export default {
     const router = useRouter();
     const items = [
       { id: "metamask", logo: "/assets/images/metamask.svg", name: "Metamask" },
-      { id: "sequence", logo: "/assets/images/sequence.svg", name: "Sequence" },
       { id: "walletconnect", logo: "/assets/images/walletconnect.svg", name: "WalletConnect" },
     ];
 
