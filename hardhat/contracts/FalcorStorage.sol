@@ -7,13 +7,11 @@ import "./interfaces/aave/IPool.sol";
 import "./interfaces/ITokensRegistry.sol";
 
 contract FalcorStorage {
-    address constant WETH_ADDRESS = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
     uint256 internal _distributioninterval;
     uint256 internal _lastDistributionTimestamp;
     Counters.Counter internal _donationPoolCounter;
 
     IPoolAddressesProvider internal _poolAddressProvider;
-    IWETHGateway internal _WETHGateway;
     ITokensRegistry internal _tokensRegistry;
 
     mapping(address => uint256) internal _totalBalances;

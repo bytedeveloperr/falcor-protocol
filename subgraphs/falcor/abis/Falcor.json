@@ -12,11 +12,6 @@
         "type": "address"
       },
       {
-        "internalType": "address",
-        "name": "WETHGateway_",
-        "type": "address"
-      },
-      {
         "internalType": "uint256",
         "name": "distributioninterval_",
         "type": "uint256"
@@ -163,7 +158,7 @@
     ],
     "name": "deposit",
     "outputs": [],
-    "stateMutability": "payable",
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

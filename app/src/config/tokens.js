@@ -1,27 +1,4 @@
 export const tokens = [
-  // {
-  //   name: "Matic",
-  //   symbol: "MATIC",
-  //   decimals: 18,
-  //   address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-  //   logo: "/assets/images/matic.svg",
-  // },
-  {
-    name: "USD Coin",
-    symbol: "USDC",
-    decimals: 6,
-    address: "0x9aa7fEc87CA69695Dd1f879567CcF49F3ba417E2",
-    aggregator: "0x572dDec9087154dC5dfBB1546Bb62713147e0Ab0",
-    logo: "/assets/images/usdc.svg",
-  },
-  {
-    name: "Tether USD",
-    symbol: "USDT",
-    decimals: 6,
-    address: "0x21C561e551638401b937b03fE5a0a0652B99B7DD",
-    aggregator: "0x92C09849638959196E976289418e5973CC96d645",
-    logo: "/assets/images/usdt.svg",
-  },
   {
     name: "DAI Token",
     symbol: "DAI",
@@ -30,6 +7,22 @@ export const tokens = [
     aggregator: "0x0FCAa9c899EC5A91eBc3D5Dd869De833b06fB046",
     logo: "/assets/images/dai.svg",
   },
-]
-
-// 0xb5bD2500A6e5F373BE051dA9992b4f9644fcCbCd
+  {
+    name: "USD Coin",
+    symbol: "USDC",
+    decimals: 6,
+    address: "0x9aa7fEc87CA69695Dd1f879567CcF49F3ba417E2",
+    aggregator: "0x572dDec9087154dC5dfBB1546Bb62713147e0Ab0",
+    logo: "/assets/images/usdc.svg",
+    disabled: true,
+  },
+  {
+    name: "Tether USD",
+    symbol: "USDT",
+    decimals: 6,
+    address: "0x21C561e551638401b937b03fE5a0a0652B99B7DD",
+    aggregator: "0x92C09849638959196E976289418e5973CC96d645",
+    logo: "/assets/images/usdt.svg",
+    disabled: true,
+  },
+];

@@ -12,9 +12,9 @@ export const falcorABI = [
         type: "address",
       },
       {
-        internalType: "address",
-        name: "WETHGateway_",
-        type: "address",
+        internalType: "uint256",
+        name: "distributioninterval_",
+        type: "uint256",
       },
     ],
     stateMutability: "nonpayable",
@@ -104,6 +104,30 @@ export const falcorABI = [
   {
     inputs: [
       {
+        internalType: "bytes",
+        name: "",
+        type: "bytes",
+      },
+    ],
+    name: "checkUpkeep",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "upkeepNeeded",
+        type: "bool",
+      },
+      {
+        internalType: "bytes",
+        name: "performData",
+        type: "bytes",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "_token",
         type: "address",
@@ -134,7 +158,7 @@ export const falcorABI = [
     ],
     name: "deposit",
     outputs: [],
-    stateMutability: "payable",
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -307,6 +331,19 @@ export const falcorABI = [
   {
     inputs: [
       {
+        internalType: "bytes",
+        name: "performData",
+        type: "bytes",
+      },
+    ],
+    name: "performUpkeep",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "uint256",
         name: "_donationPoolId",
         type: "uint256",
@@ -322,4 +359,4 @@ export const falcorABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
-]
+];
