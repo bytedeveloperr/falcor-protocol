@@ -102,7 +102,7 @@ export default {
     const routes = [
       {
         title: "Overview",
-        path: "/overview",
+        path: "/",
         icon: "mdi-view-dashboard",
       },
       {

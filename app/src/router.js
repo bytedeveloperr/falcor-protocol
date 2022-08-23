@@ -10,7 +10,7 @@ import { useConnectionStore } from "./stores";
 export const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
-    { path: "/overview", name: "overview", component: Overview },
+    { path: "/", name: "overview", component: Overview },
     { path: "/explore", name: "explore", component: Explore },
     { path: "/connect", name: "connect", component: Connect },
 
