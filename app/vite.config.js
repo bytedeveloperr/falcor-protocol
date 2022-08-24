@@ -24,7 +24,7 @@ export default defineConfig({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       util: "util",
-      buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
+      // buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
     },
   },
 });

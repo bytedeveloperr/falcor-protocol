@@ -2,7 +2,11 @@
   <v-card link flat :to="'/pools/' + pool.poolId" style="display: flex; flex-direction: column; height: 100%">
     <v-card-text class="mb-0" style="flex: auto">
       <v-avatar size="50">
-        <v-img cover aspect-ratio="1" src="/assets/images/placeholder.svg" />
+        <v-img
+          cover
+          aspect-ratio="1"
+          :src="`${pool.image ? config.ipfsGateway + '/' + pool.image : '/assets/images/placeholder.svg'}`"
+        />
       </v-avatar>
 
       <h5 class="my-3 h5 font-weight-bold">{{ pool.name }}</h5>
@@ -22,7 +26,12 @@
 </template>
 
 <script>
+import { config } from "../../config";
+
 export default {
   props: ["pool"],
-}
+  setup() {
+    return { config };
+  },
+};
 </script>
