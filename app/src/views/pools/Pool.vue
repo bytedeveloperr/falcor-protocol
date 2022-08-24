@@ -9,7 +9,11 @@
       <v-col cols="12" class="mt-0 pt-0">
         <div class="d-flex">
           <v-avatar size="100">
-            <v-img cover aspect-ratio="1" src="/assets/images/placeholder.svg" />
+            <v-img
+              cover
+              aspect-ratio="1"
+              :src="`${pool.image ? config.ipfsGateway + '/' + pool.image : '/assets/images/placeholder.svg'}`"
+            />
           </v-avatar>
 
           <v-spacer />
@@ -115,6 +119,7 @@ import Transactions from "../../components/cards/Transactions.vue";
 import Loading from "../../components/Loading.vue";
 import { storeToRefs } from "pinia";
 import { usePoolStore } from "../../stores";
+import { config } from "../../config";
 
 export default {
   components: { PoolDepositModal, Depositors, Balance, PoolWithdrawalModal, Transactions, Loading },
@@ -153,7 +158,7 @@ export default {
       state.loading = false;
     });
 
-    return { user: connectionService.state, pool, state, toggleModal, utils };
+    return { user: connectionService.state, pool, state, toggleModal, utils, config };
   },
 };
 </script>

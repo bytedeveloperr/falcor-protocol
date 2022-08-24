@@ -64,6 +64,19 @@ export class PoolService {
     poolStore.updatePool(poolId, { name: input.name, description: input.description, category: input.category });
   }
 
+  async updatePoolImage(poolId, path) {
+    const poolStore = usePoolStore();
+    const query = moralis.query("Pools");
+    query.equalTo("poolId", poolId);
+
+    const pool = await query.first();
+
+    pool.set("image", path);
+
+    await pool.save();
+    poolStore.updatePool(poolId, { image: path });
+  }
+
   async deposit(data) {
     const amount = utils.parseUnits(String(data.amount), data.token.decimals);
 

@@ -96,6 +96,10 @@ export default {
       try {
         await form.value.validate();
         if (form.value.errors.length < 1) {
+          if (state.input.token?.symbol == "USDC" || state.input.token?.symbol == "USDT") {
+            return alert("USDC and USDT supply cap reached");
+          }
+
           const poolId = await poolService.createPool({ ...state.input, token: state.input.token?.address });
           router.push(`/pools/${poolId}`);
         }

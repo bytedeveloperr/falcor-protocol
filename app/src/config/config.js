@@ -2,6 +2,8 @@ const env = import.meta.env;
 
 export const config = {
   nullAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+  web3StorageToken: env.VITE_WEB3_STORAGE_TOKEN,
+  ipfsGateway: env.VITE_IPFS_GATEWAY,
   app: {
     name: env.VITE_APP_NAME,
   },

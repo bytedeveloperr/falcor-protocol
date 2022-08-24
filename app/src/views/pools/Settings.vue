@@ -70,9 +70,16 @@
             </p>
           </div>
 
-          <v-avatar class="mt-0" size="100">
-            <v-img cover aspect-ratio="1" src="/assets/images/placeholder.svg" />
-          </v-avatar>
+          <label>
+            <v-avatar class="mt-0" size="100" style="cursor: pointer">
+              <v-img
+                cover
+                aspect-ratio="1"
+                :src="`${pool.image ? config.ipfsGateway + '/' + pool.image : '/assets/images/placeholder.svg'}`"
+              />
+            </v-avatar>
+            <input type="file" class="d-none" accept="image/*" @change="changeImage" />
+          </label>
         </div>
       </v-col>
     </template>
@@ -81,12 +88,13 @@
 
 <script>
 import { onMounted, reactive, ref } from "vue";
-import { categories, tokens } from "../../config/";
+import { categories, config, tokens } from "../../config/";
 import { connectionService, poolService } from "../../services";
 import { useRoute } from "vue-router";
 import Loading from "../../components/Loading.vue";
 import { storeToRefs } from "pinia";
 import { usePoolStore } from "../../stores";
+import { storage } from "../../utils";
 
 export default {
   components: { Loading },
@@ -123,7 +131,16 @@ export default {
       }
     }
 
-    return { tokens, pool, categories, state, rules, updatePool, form };
+    async function changeImage(e) {
+      const file = e.target.files[0];
+
+      if (file instanceof File) {
+        const cid = await storage.upload(file);
+        await poolService.updatePoolImage(pool.value.poolId, `${cid}/${file.name}`);
+      }
+    }
+
+    return { tokens, pool, categories, config, state, rules, updatePool, changeImage, form };
   },
 };
 </script>
